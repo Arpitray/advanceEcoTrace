@@ -45,8 +45,14 @@ export default function Home() {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
     setFileName(file.name);
-    const url = URL.createObjectURL(file);
-    setPreviewSrc(url);
+    
+    // Convert to base64 instead of blob URL to avoid ERR_FILE_NOT_FOUND
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreviewSrc(reader.result); // base64 data URL
+    };
+    reader.readAsDataURL(file);
+    
     setError(null); // Clear any previous errors
   }
 
@@ -80,18 +86,15 @@ export default function Home() {
       }
 
       // Navigate to results page with the plant data
-      // Include the uploaded image (previewSrc) so Results can show the original photo
+      // Store data in sessionStorage instead of URL to avoid HTTP 431 error (URL too long)
       const payload = { ...data, uploadedImage: previewSrc || null };
-      // Use base64 encoding to avoid URI malformed errors, then percent-encode
-      let encodedData;
-      try {
-        const b64 = (typeof window !== 'undefined' && window.btoa) ? window.btoa(JSON.stringify(payload)) : Buffer.from(JSON.stringify(payload)).toString('base64');
-        encodedData = encodeURIComponent(b64);
-      } catch (e) {
-        // Fallback to plain percent-encoded JSON if base64 fails
-        encodedData = encodeURIComponent(JSON.stringify(payload));
-      }
-      router.push(`/results?data=${encodedData}`);
+      
+      // Generate a unique key for this analysis session
+      const sessionKey = `plantData_${Date.now()}`;
+      sessionStorage.setItem(sessionKey, JSON.stringify(payload));
+      
+      // Pass only the key in the URL
+      router.push(`/results?key=${sessionKey}`);
 
     } catch (error) {
       console.error('Error analyzing plant:', error);

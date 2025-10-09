@@ -14,96 +14,66 @@ function ResultsContent() {
   const [loadingPerenual, setLoadingPerenual] = useState(false);
 
   useEffect(() => {
-    // Get the plant data from URL query params (passed from the main page)
-    const dataParam = searchParams.get('data');
+    // Get the session key from URL query params (to retrieve data from sessionStorage)
+    const sessionKey = searchParams.get('key');
     
-    if (dataParam) {
-      // Try multiple decoding/parsing strategies to avoid 'URI malformed' errors
-      const tryParseJSON = (str) => {
+    if (sessionKey) {
+      // Retrieve data from sessionStorage instead of URL to avoid HTTP 431 error
+      const storedData = sessionStorage.getItem(sessionKey);
+      
+      if (storedData) {
         try {
-          return JSON.parse(str);
-        } catch (e) {
-          return null;
-        }
-      };
-
-      let parsed = null;
-
-      // 1) Try decodeURIComponent -> JSON.parse
-      try {
-        const decoded = decodeURIComponent(dataParam);
-        parsed = tryParseJSON(decoded);
-      } catch (decodeErr) {
-        // decodeURIComponent can throw a URIError for malformed input
-        console.warn('decodeURIComponent failed for results dataParam, will try alternatives', decodeErr);
-      }
-
-      // 2) If that failed, try base64 decode (atob) then JSON.parse
-      if (!parsed) {
-        try {
-          if (typeof window !== 'undefined' && typeof window.atob === 'function') {
-            const b64 = window.atob(dataParam);
-            parsed = tryParseJSON(b64);
-          }
-        } catch (b64Err) {
-          console.warn('base64 atob decode failed for results dataParam', b64Err);
-        }
-      }
-
-      // 3) If still not parsed, try raw JSON.parse of the param
-      if (!parsed) {
-        parsed = tryParseJSON(dataParam);
-      }
-
-      if (parsed) {
-        setPlantData(parsed);
-        // Save to DB only for authenticated users, with session deduplication
-        (async () => {
-          try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-              // Create a unique session key for this plant result
-              const sessionKey = `saved_${user.id}_${parsed.scientificName}_${Math.floor(Date.now() / 300000)}`; // 5-minute window
-              
-              // Check if we already saved this plant in this session
-              if (typeof window !== 'undefined' && sessionStorage.getItem(sessionKey)) {
-                console.log('Plant already saved in this session, skipping');
-                return;
-              }
-              
-              // Upload image to Supabase Storage if it's a data URL
-              let imageUrl = parsed.uploadedImage;
-              if (imageUrl && imageUrl.startsWith('data:')) {
-                try {
-                  const file = dataURLtoFile(imageUrl, `plant-${Date.now()}.jpg`);
-                  const uploadResult = await uploadPlantImage(file, user.id);
-                  imageUrl = uploadResult.url;
-                  console.log('Image uploaded to Storage:', imageUrl);
-                } catch (uploadErr) {
-                  console.error('Failed to upload image to Storage:', uploadErr);
-                  // Continue with data URL as fallback
+          const parsed = JSON.parse(storedData);
+          
+          if (parsed) {
+            setPlantData(parsed);
+            // Save to DB only for authenticated users
+            (async () => {
+              try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                  // Upload image to Supabase Storage if it's a data URL
+                  let imageUrl = parsed.uploadedImage;
+                  if (imageUrl && imageUrl.startsWith('data:')) {
+                    try {
+                      const file = dataURLtoFile(imageUrl, `plant-${Date.now()}.jpg`);
+                      const uploadResult = await uploadPlantImage(file, user.id);
+                      if (uploadResult) {
+                        imageUrl = uploadResult; // uploadPlantImage returns URL string directly
+                        console.log('Image uploaded to Storage:', imageUrl);
+                      }
+                    } catch (uploadErr) {
+                      console.error('Failed to upload image to Storage:', uploadErr);
+                      // Continue with data URL as fallback
+                    }
+                  }
+                  
+                  // Save plant result with image URL
+                  const plantDataToSave = { ...parsed, uploadedImage: imageUrl };
+                  await savePlantResult(plantDataToSave, user.id);
+                  
+                  // Clean up sessionStorage after successful save
+                  sessionStorage.removeItem(sessionKey);
                 }
+              } catch (err) {
+                console.warn('Failed to save plant result for user:', err);
               }
-              
-              // Save plant result with image URL
-              const plantDataToSave = { ...parsed, uploadedImage: imageUrl };
-              const result = await savePlantResult(plantDataToSave, user.id);
-              
-              // Mark as saved in session to prevent duplicates on refresh/navigation
-              if (result && typeof window !== 'undefined') {
-                sessionStorage.setItem(sessionKey, 'true');
-              }
-            }
-          } catch (err) {
-            console.warn('Failed to save plant result for user:', err);
+            })();
+          } else {
+            console.error('Failed to parse plant data from sessionStorage');
+            router.push('/');
           }
-        })();
+        } catch (parseErr) {
+          console.error('Error parsing sessionStorage data:', parseErr);
+          router.push('/');
+        }
       } else {
-        console.error('Failed to parse plant data from URL param; redirecting to home. dataParam:', dataParam);
+        console.error('No data found in sessionStorage for key:', sessionKey);
         router.push('/');
       }
     } else {
-      // If no data, redirect to home
+      // If no session key, redirect to home
+      console.error('No session key found in URL');
       router.push('/');
     }
   }, [searchParams, router]);

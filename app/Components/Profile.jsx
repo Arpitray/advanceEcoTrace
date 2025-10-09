@@ -41,7 +41,9 @@ export default function Header() {
   return (
     <div className="w-full p-4 bg-[#ffd29d]">
       <div className="w-full flex justify-between items-center">
-        <div className='font-bold text-lg text-green-800'>EcoTrace</div>
+        <button onClick={() => router.push('/')} className="font-bold cursor-pointer text-lg text-green-800 hover:scale-110">
+          EcoTrace
+        </button>
         <DropdownMenu>
           <DropdownMenuTrigger className="flex cursor-pointer font-semibold items-center mr-6 px-6 py-1 rounded-md bg-white/80 hover:bg-white">
             Profile
