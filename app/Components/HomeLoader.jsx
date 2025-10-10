@@ -4,15 +4,19 @@ import styled from 'styled-components';
 const Loader = () => {
   return (
     <StyledWrapper>
-      <div className="loader" />
+      <div className="cell">
+        <div className="card">
+          <span className="flower-loader">Loading…</span>
+        </div>
+      </div>
     </StyledWrapper>
   );
 }
 
 const StyledWrapper = styled.div`
+  /* Fullscreen wrapper to ensure loader covers entire viewport */
   position: fixed;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100vw;
   height: 100vh;
   display: flex;
@@ -21,197 +25,106 @@ const StyledWrapper = styled.div`
   background-color: #EBE8DC;
   z-index: 9999;
 
-  .loader {
-    width: 45px;
-    height: 90px;
+  .cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  .card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .flower-loader {
+    overflow: hidden;
     position: relative;
-  }
-  .loader:after {
-    content: "";
-    position: absolute;
-    inset: 0 0 20px;
-    border-radius: 15px 15px 10px 10px;
-    padding: 1px;
-    background: linear-gradient(
-        90deg,
-        rgba(250, 248, 207, 1) 50%,
-        rgba(89, 39, 4, 1) 50%,
-        rgba(89, 39, 4, 1) 80%,
-        rgba(89, 39, 4, 1) 80%,
-        rgb(10, 4, 0) 100%
-      )
-      content-box;
-    --c: radial-gradient(farthest-side, #000 94%, #0000);
-    -webkit-mask:
-      linear-gradient(#0000 0 0),
-      var(--c) -10px -10px,
-      var(--c) 15px -14px,
-      var(--c) 9px -6px,
-      var(--c) -12px 9px,
-      var(--c) 14px 9px,
-      var(--c) 23px 27px,
-      var(--c) -8px 35px,
-      var(--c) 50% 50%,
-      linear-gradient(#000 0 0);
-    mask:
-      linear-gradient(#000 0 0),
-      var(--c) -10px -10px,
-      var(--c) 15px -14px,
-      var(--c) 9px -6px,
-      var(--c) -12px 9px,
-      var(--c) 14px 9px,
-      var(--c) 23px 27px,
-      var(--c) -8px 35px,
-      var(--c) 50% 50%,
-      linear-gradient(#0000 0 0);
-    -webkit-mask-composite: destination-out;
-    mask-composite: exclude, add, add, add, add, add, add, add, add;
-    -webkit-mask-repeat: no-repeat;
-    animation: l2 6s infinite ease-out;
-  }
-  .loader:before {
-    content: "";
-    position: absolute;
-    inset: 50% calc(50% - 4px) 0;
-    background: #e0a267;
-    border-radius: 50px;
-    box-shadow: 1px 1px 0 #472000;
-    animation: disappear 6s infinite;
+    text-indent: -9999px;
+    display: inline-block;
+    /* increased size so the flower is clearly visible in the center */
+    width: 180px;
+    height: 180px;
+    background: #e96;
+    border-radius: 50%;
+    -moz-box-shadow: white 0 0 25px 0, #485 -30px -30px 0 8px,
+      #485 30px -30px 0 8px, #485 30px 30px 0 8px, #485 -30px 30px 0 8px;
+    -webkit-box-shadow: white 0 0 25px 0, #485 -30px -30px 0 8px,
+      #485 30px -30px 0 8px, #485 30px 30px 0 8px, #485 -30px 30px 0 8px;
+    box-shadow: white 0 0 25px 0, #485 -30px -30px 0 8px, #485 30px -30px 0 8px,
+      #485 30px 30px 0 8px, #485 -30px 30px 0 8px;
+    -moz-animation: flower-loader 5s infinite ease-in-out;
+    -webkit-animation: flower-loader 5s infinite ease-in-out;
+    animation: flower-loader 5s infinite ease-in-out;
+    -moz-transform-origin: 50% 50%;
+    -ms-transform-origin: 50% 50%;
+    -webkit-transform-origin: 50% 50%;
+    transform-origin: 50% 50%;
   }
 
-  @keyframes disappear {
+  @-moz-keyframes flower-loader {
     0% {
-      scale: 1;
-      background-color: #e0a267;
-    }
-    49% {
-      background-color: #e0a267;
-    }
-    50% {
-      scale: 1;
-      background-color: #e0a267;
+      -moz-transform: rotate(0deg);
       transform: rotate(0deg);
+      -moz-box-shadow: white 0 0 25px 0, #485 -30px -30px 0 8px,
+        #485 30px -30px 0 8px, #485 30px 30px 0 8px, #485 -30px 30px 0 8px;
+      box-shadow: white 0 0 25px 0, #485 -30px -30px 0 8px, #485 30px -30px 0 8px,
+        #485 30px 30px 0 8px, #485 -30px 30px 0 8px;
     }
-    75% {
-      scale: 150;
-      transform: rotate(45deg);
-      background-color: #000;
+    50% {
+      -moz-transform: rotate(1080deg);
+      transform: rotate(1080deg);
+      -moz-box-shadow: white 0 0 25px 0, #485 30px 30px 0 8px,
+        #485 -30px 30px 0 8px, #485 -30px -30px 0 8px, #485 30px -30px 0 8px;
+      box-shadow: white 0 0 25px 0, #485 30px 30px 0 8px, #485 -30px 30px 0 8px,
+        #485 -30px -30px 0 8px, #485 30px -30px 0 8px;
     }
   }
-
-  @keyframes l2 {
+  @-webkit-keyframes flower-loader {
     0% {
-      -webkit-mask-size:
-        auto,
-        0 0,
-        0 0,
-        0 0,
-        0 0,
-        0 0,
-        0 0,
-        0 0,
-        0 0;
-      opacity: 0;
+      -webkit-transform: rotate(0deg);
+      transform: rotate(0deg);
+      -webkit-box-shadow: white 0 0 25px 0, #485 -30px -30px 0 8px,
+        #485 30px -30px 0 8px, #485 30px 30px 0 8px, #485 -30px 30px 0 8px;
+      box-shadow: white 0 0 25px 0, #485 -30px -30px 0 8px, #485 30px -30px 0 8px,
+        #485 30px 30px 0 8px, #485 -30px 30px 0 8px;
     }
-    2% {
-      opacity: 1;
-    }
-    5% {
-      -webkit-mask-size:
-        auto,
-        35px 35px,
-        0 0,
-        0 0,
-        0 0,
-        0 0,
-        0 0,
-        0 0,
-        0 0;
-    }
-    10% {
-      -webkit-mask-size:
-        auto,
-        35px 35px,
-        35px 35px,
-        0 0,
-        0 0,
-        0 0,
-        0 0,
-        0 0,
-        0 0;
-    }
-    15% {
-      -webkit-mask-size:
-        auto,
-        35px 35px,
-        35px 35px,
-        30px 30px,
-        0 0,
-        0 0,
-        0 0,
-        0 0,
-        0 0;
-    }
-    20% {
-      -webkit-mask-size:
-        auto,
-        35px 35px,
-        35px 35px,
-        30px 30px,
-        30px 30px,
-        0 0,
-        0 0,
-        0 0,
-        0 0;
-    }
-    25% {
-      -webkit-mask-size:
-        auto,
-        35px 35px,
-        35px 35px,
-        30px 30px,
-        30px 30px,
-        35px 35px,
-        0 0,
-        0 0,
-        0 0;
-    }
-    30% {
-      -webkit-mask-size:
-        auto,
-        35px 35px,
-        35px 35px,
-        30px 30px,
-        30px 30px,
-        35px 35px,
-        35px 35px,
-        0 0,
-        0 0;
-    }
-    35% {
-      -webkit-mask-size:
-        auto,
-        35px 35px,
-        35px 35px,
-        30px 30px,
-        30px 30px,
-        35px 35px,
-        35px 35px,
-        35px 35px,
-        0 0;
-    }
-    40%,
     50% {
-      -webkit-mask-size:
-        auto,
-        35px 35px,
-        35px 35px,
-        30px 30px,
-        30px 30px,
-        35px 35px,
-        35px 35px,
-        35px 35px,
-        200% 200%;
+      -webkit-transform: rotate(1080deg);
+      transform: rotate(1080deg);
+      -webkit-box-shadow: white 0 0 25px 0, #485 30px 30px 0 8px,
+        #485 -30px 30px 0 8px, #485 -30px -30px 0 8px, #485 30px -30px 0 8px;
+      box-shadow: white 0 0 25px 0, #485 30px 30px 0 8px, #485 -30px 30px 0 8px,
+        #485 -30px -30px 0 8px, #485 30px -30px 0 8px;
+    }
+  }
+  @keyframes flower-loader {
+    0% {
+      -moz-transform: rotate(0deg);
+      -ms-transform: rotate(0deg);
+      -webkit-transform: rotate(0deg);
+      transform: rotate(0deg);
+      -moz-box-shadow: white 0 0 25px 0, #485 -80px -80px 0 8px,
+        #485 80px -80px 0 8px, #485 80px 80px 0 8px, #485 -80px 80px 0 8px;
+      -webkit-box-shadow: white 0 0 25px 0, #485 -80px -80px 0 8px,
+        #485 80px -80px 0 8px, #485 80px 80px 0 8px, #485 -80px 80px 0 8px;
+      box-shadow: white 0 0 25px 0, #485 -80px -80px 0 8px, #485 80px -80px 0 8px,
+        #485 80px 80px 0 8px, #485 -80px 80px 0 8px;
+    }
+    50% {
+      -moz-transform: rotate(1080deg);
+      -ms-transform: rotate(1080deg);
+      -webkit-transform: rotate(1080deg);
+      transform: rotate(1080deg);
+      -moz-box-shadow: white 0 0 25px 0, #485 80px 80px 0 8px,
+        #485 -80px 80px 0 8px, #485 -80px -80px 0 8px, #485 80px -80px 0 8px;
+      -webkit-box-shadow: white 0 0 25px 0, #485 80px 80px 0 8px,
+        #485 -80px 80px 0 8px, #485 -80px -80px 0 8px, #485 80px -80px 0 8px;
+      box-shadow: white 0 0 25px 0, #485 80px 80px 0 8px, #485 -80px 80px 0 8px,
+        #485 -80px -80px 0 8px, #485 80px -80px 0 8px;
     }
   }`;
 
