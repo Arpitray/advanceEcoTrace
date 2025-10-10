@@ -39,7 +39,7 @@ export default function Header() {
   }
 
   return (
-    <div className="w-full p-4 bg-[#ffd29d]">
+    <div className="w-full p-4 bg-[#b0bcb1]">
       <div className="w-full flex justify-between items-center">
         <button onClick={() => router.push('/')} className="font-bold cursor-pointer text-lg text-green-800 hover:scale-110">
           EcoTrace

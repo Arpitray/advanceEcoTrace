@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Eye, EyeOff } from 'lucide-react';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('mike142@yourmail.com');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -76,7 +76,7 @@ export default function LoginPage() {
                     <label htmlFor="password" className="text-sm font-medium text-gray-600">
                         Password
                     </label>
-                    <a href="#" className="text-xs text-orange-500 font-medium">I can't remember</a>
+                    <a href="#" className="text-xs text-orange-500 font-medium hidden">I can't remember</a>
                 </div>
               <div className="relative mt-1">
                 <input
@@ -110,7 +110,7 @@ export default function LoginPage() {
                   Remember me
                 </label>
               </div>
-              <a href="#" className="text-xs text-orange-500 font-medium">I forgot the password</a>
+              <a href="#" className="text-xs text-orange-500 font-medium hidden">I forgot the password</a>
             </div>
 
             {message && <p className="text-sm text-red-500">{message}</p>}
