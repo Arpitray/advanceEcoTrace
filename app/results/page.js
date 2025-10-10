@@ -6,6 +6,26 @@ import { savePlantResult } from "@/lib/plantStorage";
 import { supabase } from '@/lib/SupabaseClient';
 import { uploadPlantImage, dataURLtoFile } from '@/lib/imageStorage';
 
+// Local copy of environmental facts (used as a fallback when a DB record
+// doesn't include an ecoFact). This mirrors the list used by the identify API
+// so gallery items still show a useful fact even if the DB row has none.
+const ECO_FACTS = [
+  "A single tree can absorb up to 48 pounds of carbon dioxide per year.",
+  "Plants produce approximately 70% of the Earth's oxygen.",
+  "The Amazon rainforest produces 20% of the world's oxygen supply.",
+  "One acre of trees can remove up to 2.6 tons of carbon dioxide per year.",
+  "Plants help reduce urban heat by providing shade and cooling through transpiration.",
+  "Indoor plants can remove up to 87% of air toxins in 24 hours.",
+  "Phytoplankton in the ocean produce more oxygen than all land plants combined.",
+  "A mature tree can provide a day's oxygen supply for up to 4 people.",
+  "Plants help prevent soil erosion and maintain water quality.",
+  "Urban trees can reduce air conditioning costs by up to 30%.",
+];
+
+function getRandomEcoFact() {
+  return ECO_FACTS[Math.floor(Math.random() * ECO_FACTS.length)];
+}
+
 function ResultsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -14,68 +34,160 @@ function ResultsContent() {
   const [loadingPerenual, setLoadingPerenual] = useState(false);
 
   useEffect(() => {
-    // Get the session key from URL query params (to retrieve data from sessionStorage)
-    const sessionKey = searchParams.get('key');
-    
-    if (sessionKey) {
-      // Retrieve data from sessionStorage instead of URL to avoid HTTP 431 error
-      const storedData = sessionStorage.getItem(sessionKey);
+    const fetchData = async () => {
+      // Check if we have a plant ID (coming from gallery)
+      const plantId = searchParams.get('id');
       
-      if (storedData) {
+      if (plantId) {
+        // Fetch from database - this is a gallery item
         try {
-          const parsed = JSON.parse(storedData);
-          
-          if (parsed) {
-            setPlantData(parsed);
-            // Save to DB only for authenticated users
-            (async () => {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (!user) {
+            console.error('User not authenticated');
+            router.push('/login');
+            return;
+          }
+
+          // Fetch the plant from database
+          const { data: plantRecord, error } = await supabase
+            .from('plant_results')
+            .select('*')
+            .eq('id', plantId)
+            .eq('user_id', user.id)
+            .single();
+
+          if (error || !plantRecord) {
+            console.error('Failed to fetch plant from database:', error);
+            router.push('/');
+            return;
+          }
+
+          // Transform database record to match expected format
+          // common_names in DB may be an array, or a JSON-stringified array, or a plain string.
+          let commonNames = [];
+          try {
+            if (Array.isArray(plantRecord.common_names)) {
+              commonNames = plantRecord.common_names;
+            } else if (typeof plantRecord.common_names === 'string') {
+              // Try parsing JSON string like '["Name"]'
               try {
-                const { data: { user } } = await supabase.auth.getUser();
-                if (user) {
-                  // Upload image to Supabase Storage if it's a data URL
-                  let imageUrl = parsed.uploadedImage;
-                  if (imageUrl && imageUrl.startsWith('data:')) {
-                    try {
-                      const file = dataURLtoFile(imageUrl, `plant-${Date.now()}.jpg`);
-                      const uploadResult = await uploadPlantImage(file, user.id);
-                      if (uploadResult) {
-                        imageUrl = uploadResult; // uploadPlantImage returns URL string directly
-                        console.log('Image uploaded to Storage:', imageUrl);
-                      }
-                    } catch (uploadErr) {
-                      console.error('Failed to upload image to Storage:', uploadErr);
-                      // Continue with data URL as fallback
-                    }
-                  }
-                  
-                  // Save plant result with image URL
-                  const plantDataToSave = { ...parsed, uploadedImage: imageUrl };
-                  await savePlantResult(plantDataToSave, user.id);
-                  
-                  // Clean up sessionStorage after successful save
-                  sessionStorage.removeItem(sessionKey);
-                }
-              } catch (err) {
-                console.warn('Failed to save plant result for user:', err);
+                const parsedCN = JSON.parse(plantRecord.common_names);
+                commonNames = Array.isArray(parsedCN) ? parsedCN : [String(parsedCN)];
+              } catch (cnErr) {
+                // Not JSON - treat as a comma separated or single name
+                commonNames = plantRecord.common_names.split(',').map(s => s.trim()).filter(Boolean);
               }
-            })();
-          } else {
-            console.error('Failed to parse plant data from sessionStorage');
+            }
+          } catch (cnParseErr) {
+            commonNames = [];
+          }
+
+          const parsed = {
+            scientificName: plantRecord.scientific_name,
+            commonNames,
+            family: plantRecord.family || 'Unknown',
+            genus: plantRecord.genus || 'Unknown',
+            score: plantRecord.score || 0,
+            uploadedImage: plantRecord.uploaded_image,
+            description: plantRecord.description || '',
+            suggestions: plantRecord.suggestions || [],
+            images: plantRecord.images || [],
+            // Use ecoFact from DB if present, otherwise pick a random local fact
+            ecoFact: plantRecord.eco_fact || plantRecord.ecoFact || getRandomEcoFact(),
+          };
+
+          setPlantData(parsed);
+          console.log('Loaded plant from database (gallery view)');
+          
+        } catch (err) {
+          console.error('Error fetching plant from database:', err);
+          router.push('/');
+        }
+        return;
+      }
+
+      // Check if we have a session key (new identification)
+      const sessionKey = searchParams.get('key');
+      
+      if (sessionKey) {
+        // Retrieve data from sessionStorage instead of URL to avoid HTTP 431 error
+        const storedData = sessionStorage.getItem(sessionKey);
+        
+        if (storedData) {
+          try {
+            const parsed = JSON.parse(storedData);
+            
+            if (parsed) {
+              setPlantData(parsed);
+              
+              // Only save to DB if this is a new identification (has data URL for image)
+              // If image is already a Supabase Storage URL, it means we're viewing from gallery
+              const isNewIdentification = parsed.uploadedImage && parsed.uploadedImage.startsWith('data:');
+              const isFromGallery = parsed.uploadedImage && !parsed.uploadedImage.startsWith('data:');
+              
+              // Save to DB only for authenticated users and new identifications
+              if (isNewIdentification) {
+                (async () => {
+                  try {
+                    const { data: { user } } = await supabase.auth.getUser();
+                    if (user) {
+                      // Upload image to Supabase Storage if it's a data URL
+                      let imageUrl = parsed.uploadedImage;
+                      if (imageUrl && imageUrl.startsWith('data:')) {
+                        try {
+                          const file = dataURLtoFile(imageUrl, `plant-${Date.now()}.jpg`);
+                          const uploadResult = await uploadPlantImage(file, user.id);
+                          if (uploadResult) {
+                            imageUrl = uploadResult; // uploadPlantImage returns URL string directly
+                            console.log('Image uploaded to Storage:', imageUrl);
+                          }
+                        } catch (uploadErr) {
+                          console.error('Failed to upload image to Storage:', uploadErr);
+                          // Continue with data URL as fallback
+                        }
+                      }
+                      
+                      // Save plant result with image URL
+                      const plantDataToSave = { ...parsed, uploadedImage: imageUrl };
+                      await savePlantResult(plantDataToSave, user.id);
+                      
+                      console.log('New plant identification saved to database');
+                    }
+                  } catch (err) {
+                    console.warn('Failed to save plant result for user:', err);
+                  } finally {
+                    // Clean up sessionStorage after processing (success or failure)
+                    sessionStorage.removeItem(sessionKey);
+                  }
+                })();
+              } else if (isFromGallery) {
+                // Viewing from gallery - just clean up sessionStorage, don't save again
+                console.log('Viewing plant from gallery - already in database');
+                sessionStorage.removeItem(sessionKey);
+              } else {
+                // No image at all - still clean up
+                sessionStorage.removeItem(sessionKey);
+              }
+            } else {
+              console.error('Failed to parse plant data from sessionStorage');
+              router.push('/');
+            }
+          } catch (parseErr) {
+            console.error('Error parsing sessionStorage data:', parseErr);
             router.push('/');
           }
-        } catch (parseErr) {
-          console.error('Error parsing sessionStorage data:', parseErr);
+        } else {
+          console.error('No data found in sessionStorage for key:', sessionKey);
           router.push('/');
         }
       } else {
-        console.error('No data found in sessionStorage for key:', sessionKey);
+        // If no session key and no plant ID, redirect to home
+        console.error('No session key or plant ID found in URL');
         router.push('/');
       }
-    } else {
-      // If no session key, redirect to home
-      console.error('No session key found in URL');
-      router.push('/');
-    }
+    };
+
+    fetchData();
   }, [searchParams, router]);
 
   // Fetch Perenual details once we have the identified plant's scientific name
@@ -122,6 +234,26 @@ function ResultsContent() {
     ? plantData.commonNames[0]
     : null;
 
+  // Small helper to clean up common name strings that may arrive as JSON-like strings
+  const cleanCommonName = (name) => {
+    if (!name && name !== 0) return '';
+    let s = String(name).trim();
+    // Remove surrounding JSON array brackets and quotes if present: ["Name"] or ['Name']
+    if ((s.startsWith('[') && s.endsWith(']')) || (s.startsWith('"[') && s.endsWith(']"'))) {
+      try {
+        const parsed = JSON.parse(s);
+        if (Array.isArray(parsed) && parsed.length > 0) return String(parsed[0]);
+      } catch (e) {
+        // fallthrough
+      }
+    }
+    // Remove wrapping quotes
+    if ((s.startsWith('"') && s.endsWith('"')) || (s.startsWith("'") && s.endsWith("'"))) {
+      s = s.slice(1, -1);
+    }
+    return s;
+  };
+
   return (
     <main className="min-h-screen bg-[#EBE8DC] py-12 px-6">
       <div className="max-w-5xl mx-auto">
@@ -153,7 +285,7 @@ function ResultsContent() {
             <div className="pr-6">
               {primaryCommonName && (
                 <h1 className="text-5xl lg:text-6xl font-serif italic text-gray-900 mb-3">
-                  {primaryCommonName}
+                  {cleanCommonName(primaryCommonName)}
                 </h1>
               )}
               <h2 className="text-2xl lg:text-3xl font-light text-gray-700 mb-2">
@@ -207,7 +339,7 @@ function ResultsContent() {
                   <div className="flex flex-wrap gap-2">
                     {commonNames.slice(1).map((name, idx) => (
                       <span key={idx} className="bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-700">
-                        {name}
+                        {cleanCommonName(name)}
                       </span>
                     ))}
                   </div>
@@ -429,16 +561,14 @@ function ResultsContent() {
                           uploadedImage: plantData.uploadedImage || null,
                         };
 
-                        // encode similar to the main page: base64 then encodeURIComponent
-                        let encoded;
+                        // Store payload in sessionStorage and navigate with a small key
                         try {
-                          const b64 = (typeof window !== 'undefined' && window.btoa) ? window.btoa(JSON.stringify(payload)) : Buffer.from(JSON.stringify(payload)).toString('base64');
-                          encoded = encodeURIComponent(b64);
+                          const sessionKey = `plantData_${Date.now()}`;
+                          sessionStorage.setItem(sessionKey, JSON.stringify(payload));
+                          router.push(`/results?key=${sessionKey}`);
                         } catch (e) {
-                          encoded = encodeURIComponent(JSON.stringify(payload));
+                          console.error('Failed to open alternative match via sessionStorage', e);
                         }
-
-                        router.push(`/results?data=${encoded}`);
                       } catch (e) {
                         console.error('Failed to open alternative match', e);
                       }

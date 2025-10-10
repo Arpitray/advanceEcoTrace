@@ -57,15 +57,14 @@ export default function BrowsePage() {
       ecoFact: "Plants are essential for life on Earth, providing oxygen, food, and habitat for countless species.",
       alternativeMatches: []
     };
-    // Encode as base64 then percent-encode to ensure safe transport in URL
-    let encodedData;
+    // Store plant detail in sessionStorage and navigate with a small key
     try {
-      const b64 = (typeof window !== 'undefined' && window.btoa) ? window.btoa(JSON.stringify(plantDetail)) : Buffer.from(JSON.stringify(plantDetail)).toString('base64');
-      encodedData = encodeURIComponent(b64);
+      const sessionKey = `plantData_${Date.now()}`;
+      sessionStorage.setItem(sessionKey, JSON.stringify(plantDetail));
+      router.push(`/results?key=${sessionKey}`);
     } catch (e) {
-      encodedData = encodeURIComponent(JSON.stringify(plantDetail));
+      console.error('Failed to open plant detail via sessionStorage', e);
     }
-    router.push(`/results?data=${encodedData}`);
   }
 
   return (

@@ -76,30 +76,9 @@ export default function GalleryPage() {
   };
 
   const handleCardClick = (item) => {
-    const payload = {
-      scientificName: item.scientific_name,
-      commonNames: Array.isArray(item.common_names) ? item.common_names : (item.common_names ? [item.common_names] : []),
-      family: item.family,
-      genus: item.genus,
-      score: item.score,
-      uploadedImage: item.uploaded_image,
-    };
-    const json = JSON.stringify(payload);
-
-    const toBase64 = (str) => {
-      try {
-        return typeof window !== 'undefined' && typeof window.btoa === 'function'
-          ? window.btoa(unescape(encodeURIComponent(str)))
-          : Buffer.from(str).toString('base64');
-      } catch (err) {
-        console.error('Base64 encode failed:', err);
-        return '';
-      }
-    };
-
-    const b64 = toBase64(json);
-    if (!b64) return;
-    router.push(`/results?data=${encodeURIComponent(b64)}`);
+    // For gallery items, pass the database ID so results page can fetch from DB
+    // This is more reliable than sessionStorage which can fail during navigation
+    router.push(`/results?id=${item.id}`);
   };
 
   if (loading) return <div className="p-8 text-center">Loading...</div>;
