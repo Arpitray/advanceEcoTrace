@@ -45,7 +45,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F3F1] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#e2f0d8] flex items-center justify-center p-4">
       <div className="w-full max-w-4xl flex bg-white rounded-2xl shadow-lg overflow-hidden">
         {/* Left Side - Form */}
         <div className="w-full lg:w-1/2 p-8">
