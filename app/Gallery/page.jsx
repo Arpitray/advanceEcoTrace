@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { getPlantHistory, deletePlantResult } from '@/lib/plantStorage';
 import { supabase } from '@/lib/SupabaseClient';
 import { Trash2, Leaf } from 'lucide-react';
+import Image from 'next/image';
 
 export default function GalleryPage() {
   const [history, setHistory] = useState([]);
@@ -100,7 +101,12 @@ export default function GalleryPage() {
           <div key={item.id} onClick={() => handleCardClick(item)} className="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition">
             <div className="aspect-square relative">
               {item.uploaded_image ? (
-                <img src={item.uploaded_image} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                <Image
+                  src={item.uploaded_image}
+                  alt={item.scientific_name || (item.common_names && item.common_names[0]) || 'Plant image'}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform"
+                />
               ) : (
                 <div className="flex items-center justify-center h-full bg-gray-100">
                   <Leaf className="w-10 h-10 text-gray-400" />

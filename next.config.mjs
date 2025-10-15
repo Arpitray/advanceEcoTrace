@@ -6,7 +6,8 @@ const nextConfig = {
 			'perenual.com',
 			'upload.wikimedia.org',
 			'live.staticflickr.com',
-			'images.unsplash.com'
+			'images.unsplash.com',
+			'eypnrfshqyszmdjqozbu.supabase.co'
 		]
 	}
 };
