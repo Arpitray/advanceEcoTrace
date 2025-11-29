@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -22,7 +23,7 @@ const StyledWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #EBE8DC;
+  background-color: #000000;
   z-index: 9999;
 
   .cell {
@@ -126,6 +127,7 @@ const StyledWrapper = styled.div`
       box-shadow: white 0 0 25px 0, #485 80px 80px 0 8px, #485 -80px 80px 0 8px,
         #485 -80px -80px 0 8px, #485 80px -80px 0 8px;
     }
-  }`;
+  }
+`;
 
 export default Loader;

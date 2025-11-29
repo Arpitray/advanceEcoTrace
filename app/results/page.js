@@ -221,10 +221,10 @@ function ResultsContent() {
 
   if (!plantData) {
     return (
-      <div className="min-h-screen bg-[#EBE8DC] flex items-center justify-center">
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-[#6B8E6B] mb-4"></div>
-          <p className="text-gray-600">Loading results...</p>
+          <div className="w-16 h-16 border-4 border-green-700/20 border-t-green-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400 font-mono">Analyzing data...</p>
         </div>
       </div>
     );
@@ -255,146 +255,165 @@ function ResultsContent() {
   };
 
   return (
-    <main className="min-h-screen bg-[#EBE8DC] py-12 px-6">
-      <div className="max-w-5xl mx-auto">
-        {/* Back Button */}
-        <button
-          onClick={() => router.push('/')}
-          className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors mb-8"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-          <span className="font-light">Back to Home</span>
-        </button>
+    <main className="min-h-screen bg-black text-white relative overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-green-950/60 via-zinc-950 to-black"></div>
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-soft-light"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+      </div>
 
-  {/* Header Card */}
-  <div className="relative bg-white/90 backdrop-blur-sm rounded-3xl p-8 lg:p-12 shadow-xl mb-8">
-          {/* Success Badge */}
-        
+      <div className="relative z-10 py-12 px-6 pt-24">
+        <div className="max-w-5xl mx-auto">
+          {/* Back Button */}
+          <button
+            onClick={() => router.push('/')}
+            className="flex items-center gap-2 text-gray-400 hover:text-green-400 transition-colors mb-8 group"
+          >
+            <svg className="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            <span className="font-mono text-sm">BACK</span>
+          </button>
 
-          {/* Plant Name + Uploaded Image to the right */}
-          <div className="mb-6">
-            <div className="pr-6">
-              {primaryCommonName && (
-                <h1 className="text-5xl lg:text-6xl font-serif italic text-gray-900 mb-3">
-                  {cleanCommonName(primaryCommonName)}
-                </h1>
-              )}
-              <h2 className="text-2xl lg:text-3xl font-light text-gray-700 mb-2">
-                {plantData.scientificName}
-              </h2>
-              <div className="flex flex-wrap gap-2 mt-4">
-                {plantData.family && (
-                  <span className="bg-[#C8DDD0] px-4 py-2 rounded-full text-sm text-gray-800">
-                    Family: {plantData.family}
-                  </span>
-                )}
-                {plantData.genus && (
-                  <span className="bg-[#E8DDD0] px-4 py-2 rounded-full text-sm text-gray-800">
-                    Genus: {plantData.genus}
-                  </span>
+          {/* Header Card */}
+          <div className="relative group mb-8">
+            <div className="absolute -inset-1 bg-gradient-to-br from-green-700 via-emerald-600 to-green-800 rounded-2xl blur opacity-15 group-hover:opacity-30 transition duration-1000"></div>
+            <div className="relative bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl p-8 lg:p-12 overflow-hidden">
+              {/* Decorative Lines */}
+              <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-green-600/40 to-transparent"></div>
+              
+              {/* Plant Name + Uploaded Image */}
+              <div className="mb-6">
+                <div className="pr-6">
+                  {primaryCommonName && (
+                    <h1 className="text-4xl lg:text-5xl font-bold text-white mb-3">
+                      {cleanCommonName(primaryCommonName)}
+                    </h1>
+                  )}
+                  <h2 className="text-xl lg:text-2xl font-light text-gray-300 mb-2 italic">
+                    {plantData.scientificName}
+                  </h2>
+                  <div className="flex flex-wrap gap-2 mt-4">
+                    {plantData.family && (
+                      <span className="bg-green-700/20 border border-green-600/30 px-4 py-2 rounded-full text-sm text-green-300 font-mono">
+                        Family: {plantData.family}
+                      </span>
+                    )}
+                    {plantData.genus && (
+                      <span className="bg-emerald-700/20 border border-emerald-600/30 px-4 py-2 rounded-full text-sm text-emerald-300 font-mono">
+                        Genus: {plantData.genus}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Uploaded image: show inline on small screens, absolute-right and vertically centered on md+ */}
+                {plantData.uploadedImage && (
+                  <>
+                    {/* Mobile / small screens: inline below name */}
+                    <div className="block md:hidden mt-4">
+                      <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-green-600/50 shadow-[0_0_20px_rgba(22,101,52,0.3)] bg-black/50 flex items-center justify-center mx-auto">
+                        <img src={plantData.uploadedImage} alt="Uploaded for identification" className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />
+                      </div>
+                    </div>
+
+                    {/* Desktop: absolute positioned at the right extreme of the header card, vertically centered */}
+                    <div className="hidden md:block absolute right-6 top-1/2 transform -translate-y-1/2">
+                      <div className="w-36 h-36 lg:w-44 lg:h-44 rounded-full overflow-hidden border-2 border-green-600/50 shadow-[0_0_30px_rgba(22,101,52,0.4)] bg-black/50 flex items-center justify-center">
+                        <img src={plantData.uploadedImage} alt="Uploaded for identification" className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />
+                      </div>
+                    </div>
+                  </>
                 )}
               </div>
-            </div>
 
-            {/* Uploaded image: show inline on small screens, absolute-right and vertically centered on md+ */}
-            {plantData.uploadedImage && (
-              <>
-                {/* Mobile / small screens: inline below name */}
-                <div className="block md:hidden mt-4">
-                  <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-white shadow-md bg-gray-100 flex items-center justify-center mx-auto">
-                    <img src={plantData.uploadedImage} alt="Uploaded for identification" className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />
-                  </div>
-                </div>
+              {/* Common Names */}
+              {(() => {
+                const commonNamesRaw = plantData.commonNames || [];
+                const commonNames = Array.isArray(commonNamesRaw)
+                  ? commonNamesRaw
+                  : (typeof commonNamesRaw === 'string' ? commonNamesRaw.split(',').map(s => s.trim()).filter(Boolean) : []);
 
-                {/* Desktop: absolute positioned at the right extreme of the header card, vertically centered */}
-                <div className="hidden md:block absolute right-6 top-1/2 transform -translate-y-1/2">
-                  <div className="w-36 h-36 lg:w-44 lg:h-44 rounded-full overflow-hidden border-4 border-white shadow-lg bg-gray-100 flex items-center justify-center">
-                    <img src={plantData.uploadedImage} alt="Uploaded for identification" className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-
-          {/* Common Names */}
-          {(() => {
-            const commonNamesRaw = plantData.commonNames || [];
-            const commonNames = Array.isArray(commonNamesRaw)
-              ? commonNamesRaw
-              : (typeof commonNamesRaw === 'string' ? commonNamesRaw.split(',').map(s => s.trim()).filter(Boolean) : []);
-
-            if (commonNames.length > 1) {
-              return (
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-3">Also known as:</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {commonNames.slice(1).map((name, idx) => (
-                      <span key={idx} className="bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-700">
-                        {cleanCommonName(name)}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              );
-            }
-            return null;
-          })()}
-        </div>
-
-        {/* Images Grid */}
-        {plantData.images && plantData.images.length > 0 && (
-          <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-xl mb-8">
-            <h3 className="text-2xl font-serif italic text-gray-900 mb-6">Reference Images</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {plantData.images.slice(0, 6).map((image, idx) => (
-                <div key={idx} className="relative group">
-                  <div className="aspect-square rounded-2xl overflow-hidden bg-[#C8DDD0]">
-                    <img
-                      src={image.url}
-                      alt={`${plantData.scientificName} - ${image.organ || 'plant'}`}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                      onError={(e) => {
-                        e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Crect fill='%23C8DDD0' width='400' height='400'/%3E%3Ctext x='200' y='200' font-size='100' text-anchor='middle' fill='%23fff'%3E🌿%3C/text%3E%3C/svg%3E";
-                      }}
-                    />
-                  </div>
-                  {image.organ && (
-                    <div className="absolute top-2 right-2 bg-black/60 text-white px-2 py-1 rounded-lg text-xs">
-                      {image.organ}
+                if (commonNames.length > 1) {
+                  return (
+                    <div className="mb-6">
+                      <h3 className="text-sm font-mono text-gray-400 mb-3 uppercase tracking-wider">Also known as:</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {commonNames.slice(1).map((name, idx) => (
+                          <span key={idx} className="bg-white/5 border border-white/10 px-3 py-1 rounded-full text-sm text-gray-300">
+                            {cleanCommonName(name)}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                  )}
+                  );
+                }
+                return null;
+              })()}
+            </div>
+          </div>
+
+          {/* Images Grid */}
+          {plantData.images && plantData.images.length > 0 && (
+            <div className="relative group mb-8">
+              <div className="absolute -inset-0.5 bg-gradient-to-br from-green-700 via-emerald-600 to-green-800 rounded-2xl blur opacity-10 group-hover:opacity-25 transition duration-1000"></div>
+              <div className="relative bg-black/60 backdrop-blur-xl border border-white/10 rounded-2xl p-8">
+                <h3 className="text-2xl font-bold text-white mb-6">Reference Gallery</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {plantData.images.slice(0, 6).map((image, idx) => (
+                    <div key={idx} className="relative group/img">
+                      <div className="aspect-square rounded-xl overflow-hidden bg-white/5 border border-white/10">
+                        <img
+                          src={image.url}
+                          alt={`${plantData.scientificName} - ${image.organ || 'plant'}`}
+                          className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-500"
+                          onError={(e) => {
+                            e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Crect fill='%23000' width='400' height='400'/%3E%3Ctext x='200' y='200' font-size='100' text-anchor='middle' fill='%2310b981'%3E🌿%3C/text%3E%3C/svg%3E";
+                          }}
+                        />
+                      </div>
+                      {image.organ && (
+                        <div className="absolute top-2 right-2 bg-green-700/80 backdrop-blur-sm text-white px-2 py-1 rounded-lg text-xs font-mono">
+                          {image.organ}
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+            </div>
+          )}
+
+          {/* Eco Fact Card */}
+          <div className="relative group mb-8">
+            <div className="absolute -inset-1 bg-gradient-to-br from-green-700 via-emerald-700 to-lime-700 rounded-2xl blur opacity-20 group-hover:opacity-35 transition duration-1000"></div>
+            <div className="relative bg-gradient-to-br from-green-900/60 to-emerald-900/60 backdrop-blur-xl border border-green-600/30 rounded-2xl p-8">
+              <div className="flex items-start gap-4">
+                <div className="text-5xl">🌍</div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-green-300 mb-3 font-mono uppercase tracking-wider">Environmental Impact</h3>
+                  <p className="text-base text-gray-200 leading-relaxed">
+                    {plantData.ecoFact}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
-        )}
 
-        {/* Eco Fact Card */}
-        <div className="bg-gradient-to-br from-[#6B8E6B] to-[#5A7D5A] rounded-3xl p-8 shadow-xl mb-8 text-white">
-          <div className="flex items-start gap-4">
-            <div className="text-5xl">🌍</div>
-            <div className="flex-1">
-              <h3 className="text-2xl font-serif italic mb-3">Environmental Fact</h3>
-              <p className="text-lg font-light leading-relaxed">
-                {plantData.ecoFact}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Care & Details (Perenual/local) */}
-        <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-xl mb-8">
-          <h3 className="text-2xl font-serif italic text-gray-900 mb-4">Care & Details</h3>
-          {loadingPerenual ? (
-            <p className="text-gray-600">Loading care details...</p>
-          ) : perenualData ? (
-            <div className="space-y-4 text-gray-800">
-              {/* Basic Info Section */}
-              {(perenualData.data?.cycle || perenualData.data?.type || perenualData.data?.origin) && (
-                <div className="border-b border-gray-200 pb-3">
-                  <h4 className="font-semibold text-lg mb-2">Basic Information</h4>
+          {/* Care & Details (Perenual/local) */}
+          <div className="relative group mb-8">
+            <div className="absolute -inset-0.5 bg-gradient-to-br from-green-700 via-emerald-600 to-green-800 rounded-2xl blur opacity-10 group-hover:opacity-25 transition duration-1000"></div>
+            <div className="relative bg-black/60 backdrop-blur-xl border border-white/10 rounded-2xl p-8">
+              <h3 className="text-2xl font-bold text-white mb-4">Care & Details</h3>
+              {loadingPerenual ? (
+                <p className="text-gray-400 font-mono text-sm">Loading botanical data...</p>
+              ) : perenualData ? (
+                <div className="space-y-4 text-gray-300">
+                {/* Basic Info Section */}
+                {(perenualData.data?.cycle || perenualData.data?.type || perenualData.data?.origin) && (
+                  <div className="border-b border-white/10 pb-3">
+                    <h4 className="font-semibold text-lg mb-2 text-green-400">Basic Information</h4>
                   {perenualData.data?.cycle && <p><strong>Life Cycle:</strong> {perenualData.data.cycle}</p>}
                   {perenualData.data?.type && <p><strong>Type:</strong> {perenualData.data.type}</p>}
                   {perenualData.data?.origin && <p><strong>Origin:</strong> {perenualData.data.origin}</p>}
@@ -405,8 +424,8 @@ function ResultsContent() {
 
               {/* Care Requirements Section */}
               {(perenualData.data?.watering || perenualData.data?.sunlight || perenualData.data?.care_level || perenualData.data?.maintenance) && (
-                <div className="border-b border-gray-200 pb-3">
-                  <h4 className="font-semibold text-lg mb-2">Care Requirements</h4>
+                <div className="border-b border-white/10 pb-3">
+                  <h4 className="font-semibold text-lg mb-2 text-lime-400">Care Requirements</h4>
                   {perenualData.data?.care_level && <p><strong>Care Level:</strong> {perenualData.data.care_level}</p>}
                   {perenualData.data?.watering && <p><strong>Watering:</strong> {perenualData.data.watering}</p>}
                   {perenualData.data?.sunlight && <p><strong>Sunlight:</strong> {perenualData.data.sunlight}</p>}
@@ -417,8 +436,8 @@ function ResultsContent() {
 
               {/* Growing Conditions */}
               {(perenualData.data?.indoor || perenualData.data?.hardiness || perenualData.data?.propagation) && (
-                <div className="border-b border-gray-200 pb-3">
-                  <h4 className="font-semibold text-lg mb-2">Growing Conditions</h4>
+                <div className="border-b border-white/10 pb-3">
+                  <h4 className="font-semibold text-lg mb-2 text-green-400">Growing Conditions</h4>
                   {perenualData.data?.indoor && <p><strong>Indoor/Outdoor:</strong> {perenualData.data.indoor}</p>}
                   {perenualData.data?.hardiness && <p><strong>Hardiness Zones:</strong> {perenualData.data.hardiness}</p>}
                   {perenualData.data?.propagation && <p><strong>Propagation:</strong> {perenualData.data.propagation}</p>}
@@ -429,8 +448,8 @@ function ResultsContent() {
 
               {/* Flowering & Fruiting */}
               {(perenualData.data?.flowers || perenualData.data?.fruits || perenualData.data?.flowering_season) && (
-                <div className="border-b border-gray-200 pb-3">
-                  <h4 className="font-semibold text-lg mb-2">Flowering & Fruiting</h4>
+                <div className="border-b border-white/10 pb-3">
+                  <h4 className="font-semibold text-lg mb-2 text-emerald-400">Flowering & Fruiting</h4>
                   {perenualData.data?.flowers && <p><strong>Produces Flowers:</strong> {perenualData.data.flowers}</p>}
                   {perenualData.data?.flowering_season && <p><strong>Flowering Season:</strong> {perenualData.data.flowering_season}</p>}
                   {perenualData.data?.fruits && <p><strong>Produces Fruits:</strong> {perenualData.data.fruits}</p>}
@@ -440,8 +459,8 @@ function ResultsContent() {
 
               {/* Safety & Characteristics */}
               {(perenualData.data?.poisonous_to_humans || perenualData.data?.poisonous_to_pets || perenualData.data?.toxicity || perenualData.data?.thorny || perenualData.data?.invasive) && (
-                <div className="border-b border-gray-200 pb-3">
-                  <h4 className="font-semibold text-lg mb-2">Safety & Characteristics</h4>
+                <div className="border-b border-white/10 pb-3">
+                  <h4 className="font-semibold text-lg mb-2 text-green-400">Safety & Characteristics</h4>
                   {perenualData.data?.toxicity && <p><strong>Toxicity:</strong> {perenualData.data.toxicity}</p>}
                   {perenualData.data?.poisonous_to_humans && <p><strong>Poisonous to Humans:</strong> {perenualData.data.poisonous_to_humans}</p>}
                   {perenualData.data?.poisonous_to_pets && <p><strong>Poisonous to Pets:</strong> {perenualData.data.poisonous_to_pets}</p>}
@@ -453,8 +472,8 @@ function ResultsContent() {
 
               {/* Uses & Benefits */}
               {(perenualData.data?.edibility || perenualData.data?.medicinal || perenualData.data?.cuisine || perenualData.data?.usage || perenualData.data?.airPurifying) && (
-                <div className="border-b border-gray-200 pb-3">
-                  <h4 className="font-semibold text-lg mb-2">Uses & Benefits</h4>
+                <div className="border-b border-white/10 pb-3">
+                  <h4 className="font-semibold text-lg mb-2 text-lime-400">Uses & Benefits</h4>
                   {perenualData.data?.usage && <p><strong>Usage:</strong> {perenualData.data.usage}</p>}
                   {perenualData.data?.edibility && <p><strong>Edibility:</strong> {perenualData.data.edibility}</p>}
                   {perenualData.data?.medicinal && <p><strong>Medicinal Use:</strong> {perenualData.data.medicinal}</p>}
@@ -467,15 +486,15 @@ function ResultsContent() {
 
               {/* Fallback/local-specific fields */}
               {perenualData.data?.foundIn && (
-                <div className="border-b border-gray-200 pb-3">
+                <div className="border-b border-white/10 pb-3">
                   <p><strong>Found in:</strong> {perenualData.data.foundIn}</p>
                 </div>
               )}
 
               {/* Description */}
               {perenualData.data?.description && (
-                <div className="border-b border-gray-200 pb-3">
-                  <h4 className="font-semibold text-lg mb-2">Description</h4>
+                <div className="border-b border-white/10 pb-3">
+                  <h4 className="font-semibold text-lg mb-2 text-green-400">Description</h4>
                   <p className="text-sm leading-relaxed">{perenualData.data.description}</p>
                 </div>
               )}
@@ -504,42 +523,45 @@ function ResultsContent() {
               )}
 
               {/* Source and note */}
-              <div className="mt-4 pt-3 border-t border-gray-200">
+              <div className="mt-4 pt-3 border-t border-white/10">
                 {perenualData.source && (
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-400">
                     <strong>Source:</strong> {perenualData.source}
                   </p>
                 )}
                 {perenualData.note && (
-                  <p className="text-sm text-gray-500 mt-1">{perenualData.note}</p>
+                  <p className="text-sm text-gray-400 mt-1">{perenualData.note}</p>
                 )}
               </div>
 
               {/* Debug: if no useful fields present, show the raw data object to assist debugging */}
               {(!perenualData.data || Object.keys(perenualData.data).filter(k => perenualData.data[k] !== null && perenualData.data[k] !== undefined).length === 0) && (
                 <div className="mt-3">
-                  <p className="text-sm text-gray-600 mb-2">No mapped fields available. Raw response:</p>
-                  <pre className="p-3 bg-gray-100 rounded text-xs text-gray-700 overflow-auto max-h-64">{JSON.stringify(perenualData, null, 2)}</pre>
+                  <p className="text-sm text-gray-400 mb-2 font-mono">No mapped fields available. Raw response:</p>
+                  <pre className="p-3 bg-black/50 border border-white/10 rounded text-xs text-green-400 overflow-auto max-h-64 font-mono">{JSON.stringify(perenualData, null, 2)}</pre>
                 </div>
               )}
             </div>
           ) : (
-            <p className="text-gray-600">No additional care details available.</p>
+            <p className="text-gray-400 font-mono text-sm">No additional care details available.</p>
           )}
-        </div>
+            </div>
+          </div>
 
-        {/* Alternative Matches */}
-        {plantData.alternativeMatches && plantData.alternativeMatches.length > 0 && (
-          <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-xl">
-            <h3 className="text-2xl font-serif italic text-gray-900 mb-6">
-              Other Possible Matches
-            </h3>
-            <div className="space-y-4">
-              {plantData.alternativeMatches.map((match, idx) => (
-                  <div
-                    key={idx}
-                    role="button"
-                    onClick={() => {
+          {/* Alternative Matches */}
+          {plantData.alternativeMatches && plantData.alternativeMatches.length > 0 && (
+            <div className="relative group mb-8">
+              <div className="absolute -inset-0.5 bg-gradient-to-br from-green-700 via-emerald-600 to-green-800 rounded-2xl blur opacity-10 group-hover:opacity-25 transition duration-1000"></div>
+              <div className="relative bg-black/60 backdrop-blur-xl border border-white/10 rounded-2xl p-8">
+                <h3 className="text-2xl font-bold text-white mb-6">
+                  Alternative Matches
+                </h3>
+                <div className="space-y-4">
+                  {plantData.alternativeMatches.map((match, idx) => (
+                    <div
+                      key={idx}
+                      role="button"
+                      onClick={() => {
                       try {
                         const payload = {
                           scientificName: match.scientificName,
@@ -566,37 +588,39 @@ function ResultsContent() {
                         console.error('Failed to open alternative match', e);
                       }
                     }}
-                    className="cursor-pointer flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
-                  >
-                    <div>
-                      <p className="font-semibold text-gray-900">{match.scientificName}</p>
-                      {match.commonNames && match.commonNames.length > 0 && (
-                        <p className="text-sm text-gray-600">{match.commonNames[0]}</p>
-                      )}
+                      className="cursor-pointer flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 hover:border-green-600/50 transition-all duration-300"
+                    >
+                      <div>
+                        <p className="font-semibold text-white italic">{match.scientificName}</p>
+                        {match.commonNames && match.commonNames.length > 0 && (
+                          <p className="text-sm text-gray-400">{match.commonNames[0]}</p>
+                        )}
+                      </div>
+                      <div className="bg-green-700 text-white px-4 py-2 rounded-full text-sm font-semibold font-mono">
+                        {match.score}% match
+                      </div>
                     </div>
-                    <div className="bg-[#6B8E6B] text-white px-4 py-2 rounded-full text-sm font-semibold">
-                      {match.score}% match
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Action Buttons */}
-        <div className="mt-8 flex flex-col sm:flex-row gap-4">
-          <button
-            onClick={() => router.push('/')}
-            className="flex-1 px-8 py-4 bg-[#6B8E6B] hover:bg-[#5A7D5A] text-white rounded-2xl font-light transition-all duration-300 shadow-md hover:shadow-lg text-center"
-          >
-            Identify Another Plant
-          </button>
-          <button
-            onClick={() => router.push('/browse')}
-            className="flex-1 px-8 py-4 bg-white hover:bg-gray-50 text-gray-900 border-2 border-gray-300 rounded-2xl font-light transition-all duration-300 shadow-md hover:shadow-lg text-center"
-          >
-            Browse More Plants
-          </button>
+          {/* Action Buttons */}
+          <div className="mt-8 flex flex-col sm:flex-row gap-4 relative z-10">
+            <button
+              onClick={() => router.push('/')}
+              className="flex-1 px-8 py-4 bg-green-700 hover:bg-green-600 text-white rounded-xl font-medium transition-all duration-300 shadow-[0_0_20px_rgba(22,101,52,0.3)] hover:shadow-[0_0_30px_rgba(22,101,52,0.5)] text-center cursor-pointer"
+            >
+              Identify Another Plant
+            </button>
+            <button
+              onClick={() => router.push('/Gallery')}
+              className="flex-1 px-8 py-4 bg-white/5 hover:bg-white/10 text-white border border-white/10 hover:border-green-600/50 rounded-xl font-medium transition-all duration-300 text-center cursor-pointer"
+            >
+              View Gallery
+            </button>
+          </div>
         </div>
       </div>
     </main>
@@ -604,16 +628,6 @@ function ResultsContent() {
 }
 
 export default function ResultsPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-[#EBE8DC] flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-[#6B8E6B] mb-4"></div>
-          <p className="text-gray-600">Loading results...</p>
-        </div>
-      </div>
-    }>
-      <ResultsContent />
-    </Suspense>
-  );
+  // Keep the rendering simple to avoid nested JSX parsing issues in the build tool.
+  return <ResultsContent />;
 }

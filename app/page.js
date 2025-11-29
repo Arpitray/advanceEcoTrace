@@ -4,7 +4,8 @@ import { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Loader from "./Components/Loader";
 import HomeLoader from "./Components/HomeLoader";
-import { supabase } from '@/lib/SupabaseClient'
+import { supabase } from '@/lib/SupabaseClient';
+import { Upload, Camera, Scan, Leaf, Info, ArrowRight, X } from "lucide-react";
 
 export default function Home() {
   const router = useRouter();
@@ -114,178 +115,199 @@ export default function Home() {
   }
 
   return (
-    <main
-      className="min-h-screen relative overflow-hidden"
-      style={{
-        backgroundImage: `url('https://res.cloudinary.com/dsjjdnife/image/upload/v1760114395/DeWatermark.ai_1760114365009_apcwc0.jpg')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed',
-      }}
-    >
-      {/* Overlay for better readability */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/10"></div>
+    <main className="min-h-screen relative overflow-hidden bg-black text-white selection:bg-green-700/30">
+      {/* Futuristic Background Elements */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-emerald-900/40 via-gray-900 to-black"></div>
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-soft-light"></div>
+        {/* Grid Pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+        {/* Glowing Orbs */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-green-800/10 rounded-full blur-[128px] animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[128px] animate-pulse delay-1000"></div>
+      </div>
 
-      {/* Main container */}
-      <div className="relative z-10 min-h-screen flex items-center py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto w-full">
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+      {/* Main Content */}
+      <div className="relative z-10 min-h-screen flex flex-col pt-20">
+        <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+          <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-12 gap-12 items-center">
             
-            {/* Left side - Hero section */}
-            <div className="space-y-8">
-              {/* Hero heading */}
-              <div className="space-y-2 animate-fade-in">
-                <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl leading-tight tracking-tight">
-                  <span className="block text-gray-900 font-light">Where Nature</span>
-                  <span className="block text-gray-900 font-serif italic mt-2">Meets Elegance</span>
+            {/* Left Column: Hero Text & Scanner */}
+            <div className="lg:col-span-7 space-y-10">
+              <div className="space-y-4">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-green-400 text-xs font-mono tracking-widest uppercase">
+                  <span className="w-2 h-2 rounded-full bg-green-600 animate-ping"></span>
+                  Advanced Botanical Analysis
+                </div>
+                <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-tight tracking-tight">
+                  Nature <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-emerald-400 to-lime-400">Decoded.</span>
                 </h1>
+                <p className="text-lg text-gray-400 max-w-xl leading-relaxed border-l-2 border-green-600/30 pl-6">
+                  Identify flora instantly using our advanced neural network. 
+                  Unlock ecological data, medicinal properties, and environmental impact metrics.
+                </p>
               </div>
 
-              {/* Subtitle */}
-              <p className="text-xl sm:text-3xl text-gray-700 font-semibold italic max-w-xl leading-relaxed">
-                Identify any plant instantly and learn its eco-benefits!
-              </p>
+              {/* Scanner Interface */}
+            <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-br from-green-700 via-emerald-600 to-green-800 rounded-2xl blur opacity-15 group-hover:opacity-30 transition duration-1000"></div>
+                <div className="relative bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl p-8 lg:p-12 overflow-hidden">
+                  {/* Decorative Scanner Lines */}
+                  <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-green-600/40 to-transparent"></div>
+                  <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-green-600/40 to-transparent"></div>
 
-              {/* Action buttons - Only show when no preview */}
-              {!previewSrc && (
-                <div className="bg-white/75 backdrop-blur-md rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/50 transform hover:scale-[1.02] transition-transform duration-300">
-                  {/* Error Message */}
-                  {error && (
-                    <div className="mb-6 bg-red-50/90 backdrop-blur-sm border border-red-200 text-red-800 px-4 py-3 rounded-xl">
-                      <p className="text-sm">{error}</p>
+                  {!previewSrc ? (
+                    <div className="space-y-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-xl font-semibold text-white flex items-center gap-2">
+                          <Scan className="w-5 h-5 text-green-400" />
+                          Input Source
+                        </h3>
+                        {error && (
+                          <span className="text-xs text-red-400 bg-red-500/10 px-2 py-1 rounded border border-red-500/20">
+                            {error}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <button
+                          onClick={openUpload}
+                          className="group/btn relative flex flex-col items-center justify-center gap-3 p-8 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-green-600/50 transition-all duration-300"
+                        >
+                          <div className="w-12 h-12 rounded-full bg-green-700/10 flex items-center justify-center group-hover/btn:scale-110 transition-transform duration-300">
+                            <Upload className="w-6 h-6 text-green-400" />
+                          </div>
+                          <span className="text-sm font-medium text-gray-300 group-hover/btn:text-white">Upload Image</span>
+                        </button>
+
+                        <button
+                          onClick={openCamera}
+                          className="group/btn relative flex flex-col items-center justify-center gap-3 p-8 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-cyan-500/50 transition-all duration-300"
+                        >
+                          <div className="w-12 h-12 rounded-full bg-emerald-700/10 flex items-center justify-center group-hover/btn:scale-110 transition-transform duration-300">
+                            <Camera className="w-6 h-6 text-emerald-400" />
+                          </div>
+                          <span className="text-sm font-medium text-gray-300 group-hover/btn:text-white">Capture Subject</span>
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-6">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-mono text-green-400 flex items-center gap-2">
+                          <span className="w-2 h-2 bg-green-600 rounded-full animate-pulse"></span>
+                          IMAGE_LOADED
+                        </h3>
+                        <button
+                          onClick={() => {
+                            setPreviewSrc(null);
+                            setFileName("");
+                            setError(null);
+                          }}
+                          className="p-2 hover:bg-white/10 rounded-full transition-colors"
+                        >
+                          <X className="w-5 h-5 text-gray-400 hover:text-white" />
+                        </button>
+                      </div>
+
+                      <div className="relative rounded-lg overflow-hidden border border-white/10 bg-black/50 aspect-video group/preview">
+                        <img 
+                          src={previewSrc} 
+                          alt="Preview" 
+                          className="w-full h-full object-contain"
+                        />
+                        {/* Scanning Overlay Effect */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-green-600/10 to-transparent opacity-0 group-hover/preview:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                        <div className="absolute top-0 left-0 w-full h-1 bg-emerald-400/50 shadow-[0_0_15px_rgba(52,211,153,0.5)] translate-y-[-100%] group-hover/preview:translate-y-[400%] transition-transform duration-[2s] ease-in-out pointer-events-none"></div>
+                      </div>
+
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="text-xs font-mono text-gray-500 truncate max-w-[200px]">
+                          {fileName}
+                        </div>
+                        <button 
+                          onClick={handleAnalyze}
+                          className="flex-1 bg-green-700 hover:bg-green-600 text-white rounded-lg py-3 px-6 font-medium transition-all duration-300 shadow-[0_0_20px_rgba(22,101,52,0.3)] hover:shadow-[0_0_30px_rgba(22,101,52,0.5)] flex items-center justify-center gap-2"
+                        >
+                          <Scan className="w-4 h-4" />
+                          <span>Initiate Analysis</span>
+                        </button>
+                      </div>
                     </div>
                   )}
-                  
-                  <div className="flex flex-col sm:flex-row gap-4">
-                    <button
-                      onClick={openUpload}
-                      className="flex-1 group px-6 py-4 bg-[#6B8E6B] hover:bg-[#5A7D5A] text-white rounded-2xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center gap-3"
-                    >
-                      <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                      </svg>
-                      <span>Upload Image</span>
-                    </button>
-
-                    <button
-                      onClick={openCamera}
-                      className="flex-1 group px-6 py-4 bg-[#8B9DAF] hover:bg-[#7A8C9E] text-white rounded-2xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center gap-3"
-                    >
-                      <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                      <span>Take Photo</span>
-                    </button>
-                  </div>
                 </div>
-              )}
-
-              {/* Preview section */}
-              {previewSrc && (
-                <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/50">
-                  <div className="space-y-4">
-                    {/* Error Message */}
-                    {error && (
-                      <div className="bg-red-50/90 backdrop-blur-sm border border-red-200 text-red-800 px-4 py-3 rounded-xl">
-                        <p className="text-sm">{error}</p>
-                      </div>
-                    )}
-                    
-                    <div className="relative rounded-2xl overflow-hidden shadow-xl group">
-                      <img 
-                        src={previewSrc} 
-                        alt={fileName || "preview"} 
-                        className="w-full h-auto max-h-[400px] object-cover"
-                      />
-                    </div>
-                    
-                    <div className="flex items-center justify-between gap-4">
-                      <p className="text-sm text-gray-700 font-medium truncate flex-1">
-                        {fileName}
-                      </p>
-                      <button
-                        onClick={() => {
-                          setPreviewSrc(null);
-                          setFileName("");
-                          setError(null);
-                        }}
-                        className="px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-full font-medium transition-all duration-200 text-sm hover:scale-105"
-                      >
-                        Clear
-                      </button>
-                    </div>
-                    
-                    <button 
-                      onClick={handleAnalyze}
-                      className="w-full bg-[#6B8E6B] hover:bg-[#5A7D5A] text-white rounded-2xl py-4 font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
-                    >
-                      Analyze Plant
-                    </button>
-                  </div>
-                </div>
-              )}
+              </div>
             </div>
 
-            {/* Right side - Feature cards */}
-            <div className="space-y-6">
-              
-              {/* Main description card */}
-              <div className="bg-white/75 backdrop-blur-lg rounded-3xl p-6 sm:p-8 lg:p-10 shadow-2xl border border-white/50 transform hover:scale-[1.02] transition-transform duration-300">
-                <div className="space-y-6">
-                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight">
-                    <span className="text-[#6B8E6B]">Ecotrace</span> - Your Personal Green Companion
-                  </h2>
-                  
-                  <p className="text-gray-700 text-base sm:text-lg leading-relaxed">
-                    It helps both nature enthusiasts and those unaware of the value of surrounding plants discover the hidden importance of every leaf around them — from environmental impact to ecological and medicinal benefits.
-                  </p>
-
-                  {/* Image showcase grid */}
-                  <div className="grid grid-cols-2 gap-4 mt-6">
-                    <div className="rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group">
-                      <img 
-                        src="https://res.cloudinary.com/dsjjdnife/image/upload/v1759865483/Gemini_Generated_Image_gtyxjogtyxjogtyx_khbeey.png"
-                        alt="Plant collection" 
-                        className="w-full h-40 sm:h-48 object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
-                    </div>
-                    <div className="rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group">
-                      <img 
-                        src="https://res.cloudinary.com/dsjjdnife/image/upload/v1759865719/Gemini_Generated_Image_vf8wpsvf8wpsvf8w_ldfj63.png"
-                        alt="Nature beauty" 
-                        className="w-full h-40 sm:h-48 object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
-                    </div>
+            {/* Right Column: Data Visualization / Features */}
+            <div className="lg:col-span-5 space-y-6">
+              {/* Info Card */}
+              <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 hover:border-emerald-500/30 transition-colors duration-300">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-emerald-500/10 rounded-xl">
+                    <Info className="w-6 h-6 text-emerald-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-white mb-2">Eco-Intelligence</h3>
+                    <p className="text-gray-400 text-sm leading-relaxed">
+                      Our database processes thousands of botanical markers to provide accurate identification and ecological significance data in milliseconds.
+                    </p>
                   </div>
                 </div>
               </div>
 
-              {/* Call to action card */}
-              <div className="bg-[#6B8E6B]/90 backdrop-blur-lg rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/30 transform hover:scale-[1.02] transition-transform duration-300">
-                <p className="text-white text-base sm:text-lg leading-relaxed mb-6">
-                  Discover the plants around you instantly. Snap a photo, learn their benefits, and become a nature pro in minutes!
-                </p>
-                <a
-                  href="mailto:rayarpit72@gmail.com?subject=Ecotrace%20Contact"
-                  className="inline-block px-8 py-3 bg-white hover:bg-gray-50 text-[#6B8E6B] rounded-full font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
-                >
-                  Contact Us
+              {/* Visual Showcase */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="relative aspect-square rounded-2xl overflow-hidden border border-white/10 group">
+                  <img 
+                    src="https://res.cloudinary.com/dsjjdnife/image/upload/v1759865483/Gemini_Generated_Image_gtyxjogtyxjogtyx_khbeey.png"
+                    alt="Sample 1" 
+                    className="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-4">
+                    <span className="text-xs font-mono text-green-400">SAMPLE_01</span>
+                  </div>
+                </div>
+                <div className="relative aspect-square rounded-2xl overflow-hidden border border-white/10 group">
+                  <img 
+                    src="https://res.cloudinary.com/dsjjdnife/image/upload/v1759865719/Gemini_Generated_Image_vf8wpsvf8wpsvf8w_ldfj63.png"
+                    alt="Sample 2" 
+                    className="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-4">
+                    <span className="text-xs font-mono text-emerald-400">SAMPLE_02</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Contact / Action */}
+              <div className="bg-gradient-to-r from-green-950/50 to-emerald-950/50 backdrop-blur-md border border-white/10 rounded-2xl p-6 flex items-center justify-between group cursor-pointer hover:border-white/20 transition-all">
+                <div>
+                  <h4 className="text-white font-medium">Join the Network</h4>
+                  <p className="text-xs text-gray-400 mt-1">Contribute to the global database</p>
+                </div>
+                <a href="mailto:rayarpit72@gmail.com" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
+                  <ArrowRight className="w-5 h-5 text-white" />
                 </a>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Footer - Team credits */}
-          <div className="mt-16 pt-8 border-t border-white/30 backdrop-blur-sm rounded-full">
-            <div className="flex flex-wrap items-center justify-center pb-12  gap-6 sm:gap-8 lg:gap-12 rounded-full">
-              <span className="text-gray-800 font-semibold text-sm tracking-wide hover:text-[#6B8E6B] transition-colors">Shwetha Kumari</span>
-              <span className="text-gray-800 font-semibold text-sm tracking-wide hover:text-[#6B8E6B] transition-colors">Lipsa Sahu</span>
-              <span className="text-gray-800 font-semibold text-sm tracking-wide hover:text-[#6B8E6B] transition-colors">Arpit Ray</span>
+        {/* Footer */}
+        <footer className="border-t border-white/5 py-8 mt-auto">
+          <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="text-xs text-gray-500 font-mono">
+              © 2025 ECOTRACE SYSTEMS. ALL RIGHTS RESERVED.
+            </div>
+            <div className="flex gap-6 text-xs font-mono text-gray-400">
+              <span className="hover:text-green-400 cursor-pointer transition-colors">SHWETHA</span>
+              <span className="hover:text-green-400 cursor-pointer transition-colors">LIPSA</span>
+              <span className="hover:text-green-400 cursor-pointer transition-colors">ARPIT</span>
             </div>
           </div>
-        </div>
+        </footer>
       </div>
 
       <input
@@ -307,3 +329,4 @@ export default function Home() {
     </main>
   );
 }
+

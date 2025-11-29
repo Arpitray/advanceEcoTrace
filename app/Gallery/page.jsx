@@ -82,48 +82,97 @@ export default function GalleryPage() {
     router.push(`/results?id=${item.id}`);
   };
 
-  if (loading) return <div className="p-8 text-center">Loading...</div>;
-
-  return (
-    <div className="min-h-screen bg-[#EBE8DC]">
-      {/* Header */}
-      <div className="bg-white shadow-sm p-6 flex justify-between items-center">
-        <h1 className="text-2xl font-serif italic">My Plant Gallery</h1>
-        <div className="flex items-center gap-2 text-gray-600">
-          <Leaf className="w-5 h-5" />
-          <span>{history.length} plants identified</span>
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-green-700/20 border-t-green-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400 font-mono">Loading gallery...</p>
         </div>
       </div>
+    );
+  }
 
-      {/* Grid */}
-      <div className="p-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {history.map((item) => (
-          <div key={item.id} onClick={() => handleCardClick(item)} className="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition">
-            <div className="aspect-square relative">
-              {item.uploaded_image ? (
-                <Image
-                  src={item.uploaded_image}
-                  alt={item.scientific_name || (item.common_names && item.common_names[0]) || 'Plant image'}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform"
-                />
-              ) : (
-                <div className="flex items-center justify-center h-full bg-gray-100">
-                  <Leaf className="w-10 h-10 text-gray-400" />
-                </div>
-              )}
-              <button onClick={(e) => handleDelete(e, item.id)} className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition">
-                <Trash2 className="w-4 h-4" />
-              </button>
+  return (
+    <div className="min-h-screen bg-black text-white relative overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-green-950/60 via-zinc-950 to-black"></div>
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-soft-light"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+      </div>
+
+      <div className="relative z-10 min-h-screen pt-20">
+        {/* Header */}
+        <div className="border-b border-white/10 backdrop-blur-sm">
+          <div className="max-w-7xl mx-auto px-6 py-8 flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight mb-1">Plant Archive</h1>
+              <p className="text-sm text-gray-400 font-mono">Your botanical collection</p>
             </div>
-            <div className="p-4">
-              <h3 className="font-serif italic text-lg">{item.scientific_name}</h3>
-              {item.common_names?.length > 0 && (
-                <p className="text-sm text-gray-600">{item.common_names[0]}</p>
-              )}
+            <div className="flex items-center gap-3 px-4 py-2 bg-white/5 border border-white/10 rounded-full">
+              <Leaf className="w-5 h-5 text-green-400" />
+              <span className="text-sm font-mono text-gray-300">{history.length} specimen{history.length !== 1 ? 's' : ''}</span>
             </div>
           </div>
-        ))}
+        </div>
+
+        {/* Grid */}
+        <div className="max-w-7xl mx-auto px-6 py-8">
+          {history.length === 0 ? (
+            <div className="text-center py-20">
+              <Leaf className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-400 mb-2">No plants yet</h3>
+              <p className="text-gray-500">Start identifying plants to build your collection</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {history.map((item) => (
+                <div key={item.id} onClick={() => handleCardClick(item)} className="group relative cursor-pointer">
+                  <div className="absolute -inset-0.5 bg-gradient-to-br from-green-700 via-emerald-600 to-green-800 rounded-2xl blur opacity-0 group-hover:opacity-25 transition duration-500"></div>
+                  <div className="relative bg-black/60 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden hover:border-green-600/50 transition-all duration-300">
+                    <div className="aspect-square relative">
+                      {item.uploaded_image ? (
+                        <Image
+                          src={item.uploaded_image}
+                          alt={item.scientific_name || (item.common_names && item.common_names[0]) || 'Plant image'}
+                          fill
+                          className="object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full bg-white/5">
+                          <Leaf className="w-12 h-12 text-gray-600" />
+                        </div>
+                      )}
+                      {/* <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div> */}
+                      <button 
+                        onClick={(e) => handleDelete(e, item.id)} 
+                        className="absolute top-3 right-3 bg-red-500/80 hover:bg-red-500 backdrop-blur-sm text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 z-10"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-semibold text-white text-lg mb-1 truncate italic">{item.scientific_name || 'Unknown species'}</h3>
+                      {item.common_names?.length > 0 && (
+                        <p className="text-sm text-green-400 truncate">{item.common_names[0]}</p>
+                      )}
+                      <div className="mt-2 flex items-center gap-2">
+                        <div className="h-1 flex-1 bg-white/10 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-emerald-500 to-cyan-500" 
+                            
+                          ></div>
+                        </div>
+                        
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

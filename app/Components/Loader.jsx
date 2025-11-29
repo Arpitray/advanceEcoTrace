@@ -97,18 +97,18 @@ const StyledWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(235,232,220,0.92); /* subtle overlay matching site tone */
+  background: rgba(0, 0, 0, 0.95); /* Dark overlay for futuristic theme */
   z-index: 9999;
 
   .ocean-scene-pro {
     position: relative;
     width: min(1100px, 95vw);
     height: min(700px, 85vh);
-    background: linear-gradient(to bottom, #1e3a8a, #0c4a6e, #111827);
+    background: linear-gradient(to bottom, #0f172a, #064e3b, #022c22); /* Darker ocean gradient */
     overflow: hidden; /* Crucial for the effect to work */
     border-radius: 1vmax;
-    border: 3px solid #a8dadc;
-    box-shadow: 0 0 3vmax rgba(168, 218, 220, 0.3);
+    border: 2px solid #166534; /* Forest green border */
+    box-shadow: 0 0 3vmax rgba(22, 101, 52, 0.2);
     display: block;
     transform: translateZ(0);
   }
