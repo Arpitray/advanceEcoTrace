@@ -628,6 +628,16 @@ function ResultsContent() {
 }
 
 export default function ResultsPage() {
-  // Keep the rendering simple to avoid nested JSX parsing issues in the build tool.
-  return <ResultsContent />;
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-green-700/20 border-t-green-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400 font-mono">Loading results...</p>
+        </div>
+      </div>
+    }>
+      <ResultsContent />
+    </Suspense>
+  );
 }
